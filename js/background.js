@@ -1,8 +1,12 @@
-console.log("background running2");
+if (window.jQuery) {  
+    console.log("Jquery undefined");
+  } else {
+    console.log("Jquery defined");
+}
 addToLinks();
 
-function onHover() {
-    console.log("hover");
+function onHover(e) {
+    console.log(e);
 }
 
 function addToLinks() {
@@ -11,8 +15,7 @@ function addToLinks() {
     // })
     // $("body").hover(onHover);
     console.log("adding to links");
-    $( "p" ).on( "mouseenter", function() {
-        onHover();
-    });
+    $( "a" ).on( "mouseenter mouseleave mouseup mousein mousemove", onHover);
+
 }
 
