@@ -39,6 +39,35 @@ async function fetchData() {
     document.getElementById("rating").innerHTML="Rating: " + rating;
     document.getElementById("weight").innerHTML="Weight: " + weight;
     document.getElementById("numplayers").innerHTML="# Players: " + minPlayers+"-"+maxPlayers;
-    console.log("Name" + thumbnail);
+    // makeWebRequestListeners();
 }
-fetchData();
+
+// function onHover() {
+//     console.log("hover");
+// }
+
+// function addToLinks() {
+//     console.log("adding to links");
+//     // $(document).ready(function () {
+//     //     console.log("jquery ready");
+//     //     $("p").hover(onHover);
+//     // });
+    
+// }
+
+// function init() {
+//     addToLinks();
+// }
+// init();
+
+// function onHover(e) {
+//     console.log("HERE2");
+//     console.log(e);
+// }
+
+
+// function makeWebRequestListeners() {
+//     console.log("HERE1");
+//     // chrome.webRequest.onBeforeRequest.addListener(onHover, { urls : ["<all_urls>"] }, []);
+//     chrome.runtime.onMessage.addListener(onHover);
+// }

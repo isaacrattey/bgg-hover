@@ -3,9 +3,24 @@
     "name": "BGG Hover",
     "description": "Save time navigating BGG",
     "version": "1.0.1",
-    "permissions": ["tabs"],
+    "permissions": [
+      "activeTab",
+      "webRequest"
+    ],
+    "host_permissions": [
+      "https://boardgamegeek.com/"
+    ],
     "action": {
       "default_popup": "index.html",
       "default_icon": "hello_extensions.png"
-    }
-  }
+    },
+    "content_scripts": [
+      {
+          "js": [
+              "js/libs/jquery-3.6.4.min.js",
+              "js/background.js"
+          ],
+          "matches": ["<all_urls>"],
+          "all_frames": true
+    } ]
+}
