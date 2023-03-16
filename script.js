@@ -1,5 +1,22 @@
+async function getCurrentUrl() {
+    let queryOptions = { active: true, lastFocusedWindow: true };
+    // `tab` will either be a `tabs.Tab` instance or `undefined`.
+    let [tab] = await chrome.tabs.query(queryOptions);
+    return tab.url;
+}
+
 async function fetchData() {
-    const res=await fetch ("https://boardgamegeek.com/xmlapi2/thing?id=42&stats=1");
+    url = await getCurrentUrl();
+    const re = /https:\/\/boardgamegeek.com\/boardgame\/(\d+)\//i;
+    groups = url.match(re);
+    queryUrl = "https://boardgamegeek.com/xmlapi2/thing?id=42&stats=1";
+    if(groups) {
+        queryUrl = "https://boardgamegeek.com/xmlapi2/thing?id=" + groups[1] + "&stats=1";
+    } else {
+        console.log("no regex match")
+    }
+
+    const res=await fetch (queryUrl);
     const record=await res.text();
     parser = new DOMParser();
     xmlDoc = parser.parseFromString(record,"text/xml");
@@ -12,7 +29,7 @@ async function fetchData() {
     designer = [...xmlDoc.querySelectorAll("[type=\"boardgamedesigner\"]")].map(sel => sel.getAttribute("value")).join(', ');
     artist = [...xmlDoc.querySelectorAll("[type=\"boardgameartist\"]")].map(sel => sel.getAttribute("value")).join(', ');
     rating = Math.round(xmlDoc.getElementsByTagName("ratings")[0].getElementsByTagName("average")[0].getAttribute("value")*10)/10;
-    weight = Math.round(xmlDoc.getElementsByTagName("ratings")[0].getElementsByTagName("averageweight")[0].getAttribute("value")*10)/10;
+    weight = Math.round(xmlDoc.getElementsByTagName("ratings")[0].getElementsByTagName("averageweight")[0].getAttribute("value")*100)/100;
     minPlayers = xmlDoc.getElementsByTagName("minplayers")[0].getAttribute("value");
     maxPlayers = xmlDoc.getElementsByTagName("maxplayers")[0].getAttribute("value");
     document.getElementById("thumb").src=thumbnail;

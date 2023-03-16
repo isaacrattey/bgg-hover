@@ -1,0 +1,31 @@
+html {
+    font-family: sans-serif;
+    font-size: 18px;
+}
+
+body {
+    width:300px;
+    padding: 5px;
+    height:100%;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flex-child {
+    flex: 1;
+    border: 2px solid yellow;
+}  
+
+.flex-child:first-child {
+    /* margin-right: 10px; */
+    flex: .5
+} 
+
+.thumbnail {
+    height: 100px;
+    width: 100px;
+    object-fit: contain;
+}
+  
