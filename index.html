@@ -1,17 +1,50 @@
 <!DOCTYPE html>
-<html>
-    <head><link rel="stylesheet" href="/style.css"></head>
-    <body>
-        <div class="flex-container">
-            <div class="flex-child"><img id="thumb" class="thumbnail"></div>
-            <div class="flex-child"><p id="name">Game Name</p></div>
+<html id="bggFloatHtml">
+    <head>
+        <style>
+            #bggFloatHtml {
+                font-family: sans-serif;
+                font-size: 18px;
+            }
+
+            #bggFloatBody {
+                width:300px;
+                padding: 5px;
+                margin: 5px;
+                height:100%;
+            }
+
+            .bgg-float-flex-container {
+                display: flex;
+            }
+
+            .bgg-float-flex-child {
+                flex: 3;
+                border: 2px solid black;
+            }  
+
+            .bgg-float-flex-child:first-child {
+                flex: 1
+            } 
+
+            .bgg-float-thumbnail {
+                height: 100px;
+                width: 100px;
+                object-fit: contain;
+            }
+            
+        </style>
+    </head>
+    <body id="bggFloatBody">
+        <div class="bgg-float-flex-container">
+            <div class="bgg-float-flex-child"><img id="bgg-float-extension-thumb" class="bgg-float-thumbnail"></div>
+            <div class="bgg-float-flex-child"><p id="bgg-float-extension-name">Game Name</p></div>
         </div>
         
-        <p id="designer">placeholder designer</p>
-        <p id="artist">placeholder artist</p>
-        <p id="rating">0.0</p>
-        <p id="weight">0.00</p>
-        <p id="numplayers">0-0 players</p>
+        <p id="bgg-float-extension-designer">placeholder designer</p>
+        <p id="bgg-float-extension-artist">placeholder artist</p>
+        <p id="bgg-float-extension-rating">0.0</p>
+        <p id="bgg-float-extension-weight">0.00</p>
+        <p id="bgg-float-extension-numplayers">0-0 players</p>
     </body>
-    <script src="./js/script.js"></script>
 </html>
