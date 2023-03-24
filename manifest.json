@@ -11,12 +11,11 @@
       "https://boardgamegeek.com/"
     ],
     "action": {
-      "default_popup": "index.html",
       "default_icon": "hello_extensions.png"
     },
     "web_accessible_resources": [
       {
-        "resources": [ "index.html" ],
+        "resources": [ "hoverWindow.html" ],
         "matches": [ "<all_urls>" ]
       }
     ],
