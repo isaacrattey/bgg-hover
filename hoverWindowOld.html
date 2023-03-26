@@ -8,10 +8,10 @@
             }
 
             #bggFloatBody {
-                /* width:300px; */
+                width:300px;
                 padding: 5px;
                 margin: 5px;
-                /* height:100%; */
+                height:100%;
                 font-family: Verdana,Arial,sans-serif;
                 font-size: 15px;
                 line-height: 1.5px;
@@ -27,18 +27,20 @@
 
             .bgg-float-flex-child {
                 flex: 3;
+                border-bottom: 2px solid black;
+                padding: .4em;
             }  
 
             .bgg-float-flex-child:first-child {
                 border-right: 2px solid black;
-                padding: .2em;
                 flex: 1;
                 display: inline-grid;
                 align-content: center;
             } 
 
             .bgg-float-thumbnail {
-                max-width: 200px;
+                height: 100px;
+                width: 100px;
                 object-fit: contain;
             }
 
@@ -136,7 +138,6 @@
 
             div#bgg-float-rating-title-div {
                 display: flex;
-                padding: .4em;
             }
 
             .title {
@@ -146,58 +147,30 @@
                 margin-left: .6em;
             }
 
-            .bgg-hover-players-time-weight-flex-container {
-                font-weight: bold;
-                display: flex;
-                border-top: 1px solid gray;
-                border-bottom: 1px solid gray;
-            }
-
-            .bgg-hover-players-time-weight-flex-child {
-                /* flex: 1; */
-                border-left: 1px solid gray;
-                padding: .4em;
-            }
-
-            .bgg-hover-players-time-weight-flex-child:first-child {
-                /* flex: 1.7; */
-                border-left: none;
-            }
-
         </style>
     </head>
     <body id="bggFloatBody">
         <div class="bgg-float-flex-container">
-            <!-- <div class="bgg-float-flex-child bgg-hover-div"> -->
-                <img id="bgg-float-extension-thumb" class="bgg-float-thumbnail bgg-float-flex-child bgg-hover-div">
-            <!-- </div> -->
+            <div class="bgg-float-flex-child bgg-hover-div"><img id="bgg-float-extension-thumb" class="bgg-float-thumbnail"></div>
             <div class="bgg-float-flex-child bgg-hover-div">
                 <div id="bgg-float-rating-title-div">
                     <div class="bgg-hover-rating-wrapper bgg-hover-div">
-                        <a id="bgg-hover-rating-link" class="bgg-hover-rating-block" href="#">
+                        <a class="bgg-hover-rating-block">
                             <span id="bgg-float-extension-rating" class="bgg-hover-game-rating">1000</span>
                         </a>
                     </div>
                     <div id="bgg-hover-title-wrapper">
-                        <span><span id="bgg-float-extension-name" class="title bgg-hover-p">Game Name</span> <span id="bgg-hover-year"></span></span>
+                        <p id="bgg-float-extension-name" class="title bgg-hover-p">Game Name</p>
                     </div>
                 </div>
-                <div class="bgg-hover-players-time-weight-flex-container">
-                    <div class="bgg-hover-players-time-weight-flex-child"><p id="bgg-float-extension-numplayers" class="bgg-hover-p">0-0 players</p></div>
-                    <div class="bgg-hover-players-time-weight-flex-child"><p id="bgg-float-extension-time" class="bgg-hover-p">20 min</p></div>
-                    <div class="bgg-hover-players-time-weight-flex-child"><p id="bgg-float-extension-weight" class="bgg-hover-p">0.00</p></div>
-                </div>
-                <div>
-                    <span id="bgg-float-extension-designer" class="bgg-hover-p">Designer<span id="bgg-hover-designer-plural">s</span>: <a id="bgg-hover-designer-1">Designer 1</a><span id="bgg-hover-designer-comma">,</span> <a id="bgg-hover-designer-2">Designer 2</a><a id="bgg-hover-designer-more">+ more</a></span>
-                </div>
-                <div>
-                    <span id="bgg-float-extension-artist" class="bgg-hover-p">Artist<span id="bgg-hover-artist-plural">s</span>: <a id="bgg-hover-artist-1">Artist 1</a><span id="bgg-hover-artist-comma">,</span> <a id="bgg-hover-artist-2">Artist 2</a><a id="bgg-hover-artist-more">+ more</a></span>
-                </div>
+                <div><p id="bgg-float-extension-designer" class="bgg-hover-p">placeholder designer</p></div>
+                <div><p id="bgg-float-extension-artist" class="bgg-hover-p">placeholder artist</p></div>
             </div>
         </div>
         
         
         
-        
+        <p id="bgg-float-extension-weight" class="bgg-hover-p">0.00</p>
+        <p id="bgg-float-extension-numplayers" class="bgg-hover-p">0-0 players</p>
     </body>
 </html>

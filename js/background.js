@@ -2,6 +2,7 @@
 addToLinks();
 
 var hovering = false;
+var target;
 
 var hoverWindowMargin = 10;
 
@@ -11,8 +12,8 @@ div.classList.add("bggHoverWindow");
 div.id = "floatWindow";
 div.style.border = '2px solid black';
 div.style.position = 'absolute';
-div.style.aspectRatio = '1 / 1';
-div.style.height = '40%';
+// div.style.aspectRatio = '1.1 / 1';
+// div.style.height = '40%';
 div.style.background = 'rgb(214, 214, 214)';
 div.style.zIndex = '1000';
 // div.style.padding = '5px';
@@ -27,12 +28,13 @@ $(document).ready(function(){
 
 function onEnter(e) {
     // console.log(e);
+    target = e.target;
     queryUrl = matchUrl(e.target.href);
     if(queryUrl) { //if it is a boardgame link
         // console.log("Entered: " + e.target.href);
         e.target.addEventListener("mouseleave", onLeave);
         document.addEventListener('mousemove', onMove);
-        insertToFloatWindow(queryUrl);
+        insertToFloatWindow(queryUrl, e.target.href);
     }
     hovering = true;
 }
@@ -48,7 +50,7 @@ function onLeave(e) {
     //remove div
     // document.querySelector('.bggHoverWindow').remove();
     
-    e.target.removeEventListener("mouseleave", onLeave);
+    target.removeEventListener("mouseleave", onLeave);
     document.removeEventListener("mousemove", onMove);
     // console.log("Left: " + e.target.href);
 }
@@ -57,8 +59,8 @@ function onMove(e) {
     if(e.ctrlKey) {
         return;
     }
-    if(!hovering) {
-        onLeave(e);
+    if(e.target != target) {
+        onLeave(target);
     }
     document.querySelector('.bggHoverWindow').style.left = e.pageX + 'px';
     document.querySelector('.bggHoverWindow').style.top = e.pageY + 'px';
@@ -110,7 +112,7 @@ function matchUrl(url) {
     }
 }
 
-async function insertToFloatWindow(queryUrl) {
+async function insertToFloatWindow(queryUrl, originalUrl) {
     const res=await fetch (queryUrl).then((response) => {
         if (response.ok) {
             return response.text();
@@ -126,30 +128,34 @@ async function insertToFloatWindow(queryUrl) {
             // The querySelect gets all the designers/artists
             // The map gets the value(designer/artist name) for each designer
             // The join() combines them into one string if necessary
-            designer = [...xmlDoc.querySelectorAll("[type=\"boardgamedesigner\"]")].map(sel => sel.getAttribute("value")).join(', ');
-            artist = [...xmlDoc.querySelectorAll("[type=\"boardgameartist\"]")].map(sel => sel.getAttribute("value")).join(', ');
+            formatDesigners([...xmlDoc.querySelectorAll("[type=\"boardgamedesigner\"]")].map(sel => sel.getAttribute("value")), [...xmlDoc.querySelectorAll("[type=\"boardgamedesigner\"]")].map(sel => sel.getAttribute("id")), originalUrl);
+            formatArtists([...xmlDoc.querySelectorAll("[type=\"boardgameartist\"]")].map(sel => sel.getAttribute("value")), [...xmlDoc.querySelectorAll("[type=\"boardgameartist\"]")].map(sel => sel.getAttribute("id")), originalUrl);
             rating = Math.round(xmlDoc.getElementsByTagName("ratings")[0].getElementsByTagName("average")[0].getAttribute("value")*10)/10;
             weight = Math.round(xmlDoc.getElementsByTagName("ratings")[0].getElementsByTagName("averageweight")[0].getAttribute("value")*100)/100;
             minPlayers = xmlDoc.getElementsByTagName("minplayers")[0].getAttribute("value");
             maxPlayers = xmlDoc.getElementsByTagName("maxplayers")[0].getAttribute("value");
+            minTime = xmlDoc.getElementsByTagName("minplaytime")[0].getAttribute("value");
+            maxTime = xmlDoc.getElementsByTagName("maxplaytime")[0].getAttribute("value");
+            year = xmlDoc.getElementsByTagName("yearpublished")[0].getAttribute("value");
+            formatPlayerCount(minPlayers, maxPlayers);
+            formatTime(minTime, maxTime);
             document.getElementById("bgg-float-extension-thumb").src=thumbnail;
             formatTitle(gameName);
-            document.getElementById("bgg-float-extension-designer").innerHTML="Designer: " + designer;
-            document.getElementById("bgg-float-extension-artist").innerHTML="Artist: " + artist;
-            formatRating(rating);
+            formatRating(rating, originalUrl);
             document.getElementById("bgg-float-extension-weight").innerHTML="Weight: " + weight;
-            document.getElementById("bgg-float-extension-numplayers").innerHTML="# Players: " + minPlayers+"-"+maxPlayers;
+            document.getElementById("bgg-hover-year").innerHTML="(" + year + ")";
             if(hovering) {
                 document.querySelector('.bggHoverWindow').style.display = 'inline';
             }
         }).catch(error => {
             document.getElementById("bgg-float-extension-name").innerHTML="Failed to reach BGG API";
+            console.log(error)
             if(hovering) {
                 document.querySelector('.bggHoverWindow').style.display = 'inline';
             }
     });
 
-    async function formatRating(rating) {
+    async function formatRating(rating, url) {
         $('.bgg-hover-rating-block').removeClass("bgg-hover-has-rating-3 bgg-hover-has-rating-5 bgg-hover-has-rating-7 bgg-hover-has-rating-8 bgg-hover-has-rating-9 bgg-hover-has-rating-10");
         if(rating < 3) {
             $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-3');
@@ -164,11 +170,94 @@ async function insertToFloatWindow(queryUrl) {
         } else {
             $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-10');
         }
+        document.getElementById("bgg-hover-rating-link").href = url + "/ratings?rated=1&comment=1";
         document.getElementById("bgg-float-extension-rating").innerHTML = rating.toString();
     }
 
     async function formatTitle(title) {
         document.getElementById("bgg-float-extension-name").innerHTML=gameName;
+    }
+
+    async function formatDesigners(names, ids, url) {
+        if(names.length == 1) {
+            document.getElementById("bgg-hover-designer-plural").style.display = "none";
+            document.getElementById("bgg-hover-designer-1").innerHTML=names[0];
+            document.getElementById("bgg-hover-designer-1").href="https://boardgamegeek.com/boardgamedesigner/" + ids[0];
+            document.getElementById("bgg-hover-designer-comma").style.display="none";
+            document.getElementById("bgg-hover-designer-2").style.display="none";
+            document.getElementById("bgg-hover-designer-more").style.display="none";
+        } else if(names.length == 2) {
+            document.getElementById("bgg-hover-designer-plural").style.display = "inline";
+            document.getElementById("bgg-hover-designer-1").innerHTML=names[0];
+            document.getElementById("bgg-hover-designer-1").href="https://boardgamegeek.com/boardgamedesigner/" + ids[0];
+            document.getElementById("bgg-hover-designer-comma").style.display="inline";
+            document.getElementById("bgg-hover-designer-2").innerHTML=names[1];
+            document.getElementById("bgg-hover-designer-2").href="https://boardgamegeek.com/boardgamedesigner/" + ids[1];
+            document.getElementById("bgg-hover-designer-2").style.display="inline";
+            document.getElementById("bgg-hover-designer-more").style.display="none";
+        } else {
+            document.getElementById("bgg-hover-designer-plural").style.display = "inline";
+            document.getElementById("bgg-hover-designer-1").innerHTML=names[0];
+            document.getElementById("bgg-hover-designer-1").href="https://boardgamegeek.com/boardgamedesigner/" + ids[0];
+            document.getElementById("bgg-hover-designer-comma").style.display="none";
+            document.getElementById("bgg-hover-designer-2").style.display="none";
+            document.getElementById("bgg-hover-designer-more").innerHTML=" + " + (names.length - 1) + " more";
+            document.getElementById("bgg-hover-designer-more").href=url + "/credits";
+            document.getElementById("bgg-hover-designer-more").style.display="inline";
+        }
+    }
+
+    async function formatArtists(names, ids, url) {
+        if(names.length == 1) {
+            document.getElementById("bgg-hover-artist-plural").style.display = "none";
+            document.getElementById("bgg-hover-artist-1").innerHTML=names[0];
+            document.getElementById("bgg-hover-artist-1").href="https://boardgamegeek.com/boardgameartist/" + ids[0];
+            document.getElementById("bgg-hover-artist-comma").style.display="none";
+            document.getElementById("bgg-hover-artist-2").style.display="none";
+            document.getElementById("bgg-hover-artist-more").style.display="none";
+        } else if(names.length == 2) {
+            document.getElementById("bgg-hover-artist-plural").style.display = "inline";
+            document.getElementById("bgg-hover-artist-1").innerHTML=names[0];
+            document.getElementById("bgg-hover-artist-1").href="https://boardgamegeek.com/boardgameartist/" + ids[0];
+            document.getElementById("bgg-hover-artist-comma").style.display="inline";
+            document.getElementById("bgg-hover-artist-2").innerHTML=names[1];
+            document.getElementById("bgg-hover-artist-2").href="https://boardgamegeek.com/boardgameartist/" + ids[1];
+            document.getElementById("bgg-hover-artist-2").style.display="inline";
+            document.getElementById("bgg-hover-artist-more").style.display="none";
+        } else {
+            document.getElementById("bgg-hover-artist-plural").style.display = "inline";
+            document.getElementById("bgg-hover-artist-1").innerHTML=names[0];
+            document.getElementById("bgg-hover-artist-1").href="https://boardgamegeek.com/boardgameartist/" + ids[0];
+            document.getElementById("bgg-hover-artist-comma").style.display="none";
+            document.getElementById("bgg-hover-artist-2").style.display="none";
+            document.getElementById("bgg-hover-artist-more").innerHTML=" + " + (names.length - 1) + " more";
+            document.getElementById("bgg-hover-artist-more").href=url + "/credits";
+            document.getElementById("bgg-hover-artist-more").style.display="inline";
+        }
+    }
+
+    async function formatPlayerCount(min, max) {
+        var out = "";
+        if(min == max) {
+            if(min == 1) {
+                out = "1 player";
+            } else {
+                out = min + " players";
+            }
+        }  else {
+            out = min+"-"+max;
+        }
+        document.getElementById("bgg-float-extension-numplayers").innerHTML="# Players: " + out;
+    }
+
+    async function formatTime(min, max) {
+        var out = "";
+        if(min == max) {
+            out = min + " Min";
+        }  else {
+            out = min + "–" + max + " Min";
+        }
+        document.getElementById("bgg-float-extension-time").innerHTML=out;
     }
     
 }
