@@ -4,18 +4,18 @@
     "description": "Save time navigating BGG",
     "version": "1.0.1",
     "permissions": [
-      "activeTab",
-      "webRequest"
+      "tabs"
     ],
-    "host_permissions": [
-      "https://boardgamegeek.com/"
-    ],
+    "icons": { "16": "icons/logo16.png",
+      "32": "icons/logo32.png",
+      "48": "icons/logo48.png",
+      "128": "icons/logo128.png" },
     "action": {
-      "default_icon": "hello_extensions.png"
+      "default_icon": "icons/logoFull.png"
     },
     "web_accessible_resources": [
       {
-        "resources": [ "hoverWindow.html" ],
+        "resources": [ "html/hoverWindow.html" ],
         "matches": [ "<all_urls>" ]
       }
     ],
@@ -23,8 +23,9 @@
       {
           "js": [
               "js/libs/jquery-3.6.4.min.js",
-              "js/background.js"
+              "js/contentScript.js"
           ],
+          "css": ["css/style.css"],
           "matches": ["<all_urls>"],
           "all_frames": true
     } ]
