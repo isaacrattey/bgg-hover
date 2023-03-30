@@ -57,6 +57,10 @@
     font-weight: 700;
 }
 
+a#bgg-hover-rating-link {
+    color: white;
+}
+
 .bgg-hover-rating-wrapper {
     float: left;
 }
@@ -83,13 +87,13 @@
 }
 
 .bgg-hover-rating-block::before {
-    border-bottom: 13px solid white;
-    top: -13px;
+    border-bottom: 12px solid white;
+    top: -12px;
 }
 
 .bgg-hover-rating-block::after {
-    bottom: -13px;
-    border-top: 13px solid white;
+    bottom: -12px;
+    border-top: 12px solid white;
 }
 
 .bgg-hover-has-rating-3, .bgg-hover-has-rating-3:before, .bgg-hover-has-rating-3:after {

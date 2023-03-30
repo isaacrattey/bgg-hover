@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "BGG Hover",
     "description": "Save time navigating BGG",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "permissions": [
       "tabs"
     ],
