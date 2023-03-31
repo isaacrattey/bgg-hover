@@ -6,10 +6,8 @@
 }
 
 #bggFloatBody {
-    /* width:300px; */
     padding: 5px;
     margin: 5px;
-    /* height:100%; */
     font-family: Verdana,Arial,sans-serif;
     font-size: 15px;
     line-height: 1.5px;
@@ -47,8 +45,6 @@
     background-color: transparent;
     margin-top: 13px;
     margin-bottom: 13px;
-    /* margin-bottom: 13px;
-    margin-left: 7px; */
     line-height: 20px;
     display: block;
     text-align: center;
@@ -156,13 +152,11 @@ div#bgg-float-rating-title-div {
 }
 
 .bgg-hover-players-time-weight-flex-child {
-    /* flex: 1; */
     border-left: 1px solid gray;
     padding: .4em;
 }
 
 .bgg-hover-players-time-weight-flex-child:first-child {
-    /* flex: 1.7; */
     border-left: none;
 }
 

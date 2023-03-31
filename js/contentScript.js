@@ -1,11 +1,12 @@
 addToLinks();
 
+// These are used for keeping the window frozen when Ctrl is held
 var hovering = false;
 var target;
 
 var hoverWindowMargin = 10;
 
-// Make the display box
+// Make the display box and give it some style
 var div = document.createElement('div');
 div.classList.add("bggHoverWindow");
 div.id = "floatWindow";
@@ -16,13 +17,14 @@ div.style.zIndex = '100000000';
 div.style.margin = hoverWindowMargin + 'px';
 div.style.display = 'none';
 div.style.width = 'max-content';
-const newContent = document.createTextNode("Hi there and greetings!");
+const newContent = document.createTextNode("Shouldn't see this text.");
 div.appendChild(newContent);
 document.body.appendChild(div);
 $(document).ready(function(){
     $('.bggHoverWindow').load(chrome.runtime.getURL("html/hoverWindow.html"));
 });
 
+// For when the mouse enters an <a.bggHoverLink> element
 function onEnter(e) {
     if(e.ctrlKey && document.querySelector('.bggHoverWindow').style.display == "inline") {
         return;
@@ -37,6 +39,7 @@ function onEnter(e) {
     hovering = true;
 }
 
+// For when the mouse leaves an <a.bggHoverLink> element
 function onLeave(e) {
     hovering = false;
     if(e.ctrlKey) {
@@ -49,6 +52,7 @@ function onLeave(e) {
     document.removeEventListener("mousemove", onMove);
 }
 
+// For when the mouse moves after entering an <a.bggHoverLink> element
 function onMove(e) {
     if(e.ctrlKey) {
         return;
@@ -68,6 +72,7 @@ function onMove(e) {
     }
 }
 
+// For adding listeners to <a> boardgamegeek.com links
 function addToLinks() {
     var a_list = document.querySelectorAll('a[href*="boardgame"]:not(.bggHoverLink)'); // returns NodeList
     var a_array = [...a_list]; // converts NodeList to Array
@@ -82,6 +87,8 @@ function addToLinks() {
     setTimeout(validateLoad, 5000);
 }
 
+// Check that there aren't any new boardgamegeek.com links(just in case more of the page was loaded)
+// Run every 5 seconds
 function validateLoad() {
     var a_list = document.querySelectorAll('a[href*="boardgame"]:not(.bggHoverLink)'); // returns NodeList
     var a_array = [...a_list]; // converts NodeList to Array
@@ -94,6 +101,7 @@ function validateLoad() {
     }
 }
 
+// For capturing the boardgame ID from the URL
 function matchUrl(url) {
     const re = /https:\/\/boardgamegeek.com\/(boardgame|boardgameexpansion)\/(\d+)\/[^\/]+$/;
     groups = url.match(re);
@@ -104,6 +112,7 @@ function matchUrl(url) {
     }
 }
 
+// For updating the hover window and displaying it
 async function insertToFloatWindow(queryUrl, originalUrl) {
     if(location.href == originalUrl) {
         return;
@@ -150,134 +159,142 @@ async function insertToFloatWindow(queryUrl, originalUrl) {
             }
     });
 
-    async function formatRating(rating, url) {
-        $('.bgg-hover-rating-block').removeClass("bgg-hover-has-rating-3 bgg-hover-has-rating-5 bgg-hover-has-rating-7 bgg-hover-has-rating-8 bgg-hover-has-rating-9 bgg-hover-has-rating-10");
-        if(rating < 3) {
-            $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-3');
-        } else if(rating < 5) {
-            $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-5');
-        } else if(rating < 7) {
-            $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-7');
-        } else if(rating < 8) {
-            $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-8');
-        } else if(rating < 9) {
-            $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-9');
+// Update the rating and color of the rating hexagon based on the average rating
+async function formatRating(rating, url) {
+    $('.bgg-hover-rating-block').removeClass("bgg-hover-has-rating-3 bgg-hover-has-rating-5 bgg-hover-has-rating-7 bgg-hover-has-rating-8 bgg-hover-has-rating-9 bgg-hover-has-rating-10");
+    if(rating < 3) {
+        $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-3');
+    } else if(rating < 5) {
+        $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-5');
+    } else if(rating < 7) {
+        $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-7');
+    } else if(rating < 8) {
+        $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-8');
+    } else if(rating < 9) {
+        $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-9');
+    } else {
+        $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-10');
+    }
+    document.getElementById("bgg-hover-rating-link").href = url + "/ratings?rated=1&comment=1";
+    document.getElementById("bgg-float-extension-rating").innerHTML = rating.toFixed(1);
+}
+
+// Update the title
+async function formatTitle(title) {
+    document.getElementById("bgg-float-extension-name").innerHTML=gameName;
+}
+
+// Commented out portion is for updating the color of the weight text(but it didn't look great)
+async function formatWeight(weight) {
+    document.getElementById("bgg-hover-weight").innerHTML=weight.toFixed(2);
+    // if(weight < 3) {
+    //     document.getElementById("bgg-hover-weight").style.color = "#5bda98";
+    // } else if(weight < 4) {
+    //     document.getElementById("bgg-hover-weight").style.color = "#ff6b26";
+    // } else {
+    //     document.getElementById("bgg-hover-weight").style.color = "#df4751";
+    // }
+}
+
+// Format designer names and add hyperlinks
+// Display one or two names normally. Display more than two names as "First Designer + more"
+async function formatDesigners(names, ids, url) {
+    if(names.length == 0) {
+        document.getElementById("bgg-hover-designer-plural").style.display = "none";
+        document.getElementById("bgg-hover-designer-1").innerHTML="None";
+        document.getElementById("bgg-hover-designer-1").href=url + "/credits";
+        document.getElementById("bgg-hover-designer-comma").style.display="none";
+        document.getElementById("bgg-hover-designer-2").style.display="none";
+        document.getElementById("bgg-hover-designer-more").style.display="none";
+    } else if(names.length == 1) {
+        document.getElementById("bgg-hover-designer-plural").style.display = "none";
+        document.getElementById("bgg-hover-designer-1").innerHTML=names[0];
+        document.getElementById("bgg-hover-designer-1").href="https://boardgamegeek.com/boardgamedesigner/" + ids[0];
+        document.getElementById("bgg-hover-designer-comma").style.display="none";
+        document.getElementById("bgg-hover-designer-2").style.display="none";
+        document.getElementById("bgg-hover-designer-more").style.display="none";
+    } else if(names.length == 2) {
+        document.getElementById("bgg-hover-designer-plural").style.display = "inline";
+        document.getElementById("bgg-hover-designer-1").innerHTML=names[0];
+        document.getElementById("bgg-hover-designer-1").href="https://boardgamegeek.com/boardgamedesigner/" + ids[0];
+        document.getElementById("bgg-hover-designer-comma").style.display="inline";
+        document.getElementById("bgg-hover-designer-2").innerHTML=names[1];
+        document.getElementById("bgg-hover-designer-2").href="https://boardgamegeek.com/boardgamedesigner/" + ids[1];
+        document.getElementById("bgg-hover-designer-2").style.display="inline";
+        document.getElementById("bgg-hover-designer-more").style.display="none";
+    } else {
+        document.getElementById("bgg-hover-designer-plural").style.display = "inline";
+        document.getElementById("bgg-hover-designer-1").innerHTML=names[0];
+        document.getElementById("bgg-hover-designer-1").href="https://boardgamegeek.com/boardgamedesigner/" + ids[0];
+        document.getElementById("bgg-hover-designer-comma").style.display="none";
+        document.getElementById("bgg-hover-designer-2").style.display="none";
+        document.getElementById("bgg-hover-designer-more").innerHTML=" + " + (names.length - 1) + " more";
+        document.getElementById("bgg-hover-designer-more").href=url + "/credits";
+        document.getElementById("bgg-hover-designer-more").style.display="inline";
+    }
+}
+
+// Same as above, but for Artist instead of designers
+async function formatArtists(names, ids, url) {
+    if(names.length == 0) {
+        document.getElementById("bgg-hover-artist-plural").style.display = "none";
+        document.getElementById("bgg-hover-artist-1").innerHTML="None";
+        document.getElementById("bgg-hover-artist-1").href=url + "/credits";
+        document.getElementById("bgg-hover-artist-comma").style.display="none";
+        document.getElementById("bgg-hover-artist-2").style.display="none";
+        document.getElementById("bgg-hover-artist-more").style.display="none";
+    } else if(names.length == 1) {
+        document.getElementById("bgg-hover-artist-plural").style.display = "none";
+        document.getElementById("bgg-hover-artist-1").innerHTML=names[0];
+        document.getElementById("bgg-hover-artist-1").href="https://boardgamegeek.com/boardgameartist/" + ids[0];
+        document.getElementById("bgg-hover-artist-comma").style.display="none";
+        document.getElementById("bgg-hover-artist-2").style.display="none";
+        document.getElementById("bgg-hover-artist-more").style.display="none";
+    } else if(names.length == 2) {
+        document.getElementById("bgg-hover-artist-plural").style.display = "inline";
+        document.getElementById("bgg-hover-artist-1").innerHTML=names[0];
+        document.getElementById("bgg-hover-artist-1").href="https://boardgamegeek.com/boardgameartist/" + ids[0];
+        document.getElementById("bgg-hover-artist-comma").style.display="inline";
+        document.getElementById("bgg-hover-artist-2").innerHTML=names[1];
+        document.getElementById("bgg-hover-artist-2").href="https://boardgamegeek.com/boardgameartist/" + ids[1];
+        document.getElementById("bgg-hover-artist-2").style.display="inline";
+        document.getElementById("bgg-hover-artist-more").style.display="none";
+    } else {
+        document.getElementById("bgg-hover-artist-plural").style.display = "inline";
+        document.getElementById("bgg-hover-artist-1").innerHTML=names[0];
+        document.getElementById("bgg-hover-artist-1").href="https://boardgamegeek.com/boardgameartist/" + ids[0];
+        document.getElementById("bgg-hover-artist-comma").style.display="none";
+        document.getElementById("bgg-hover-artist-2").style.display="none";
+        document.getElementById("bgg-hover-artist-more").innerHTML=" + " + (names.length - 1) + " more";
+        document.getElementById("bgg-hover-artist-more").href=url + "/credits";
+        document.getElementById("bgg-hover-artist-more").style.display="inline";
+    }
+}
+
+// Format player count based on whether it is a range or a single player count
+async function formatPlayerCount(min, max) {
+    var out = "";
+    if(min == max) {
+        if(min == 1) {
+            out = "1 player";
         } else {
-            $('.bgg-hover-rating-block').addClass('bgg-hover-has-rating-10');
+            out = min + " players";
         }
-        document.getElementById("bgg-hover-rating-link").href = url + "/ratings?rated=1&comment=1";
-        document.getElementById("bgg-float-extension-rating").innerHTML = rating.toFixed(1);
+    }  else {
+        out = min+"-"+max;
     }
+    document.getElementById("bgg-float-extension-numplayers").innerHTML="# Players: " + out;
+}
 
-    async function formatTitle(title) {
-        document.getElementById("bgg-float-extension-name").innerHTML=gameName;
+// Similar to player count but for playing time
+async function formatTime(min, max) {
+    var out = "";
+    if(min == max) {
+        out = min + " Min";
+    }  else {
+        out = min + "–" + max + " Min";
     }
-
-    async function formatWeight(weight) {
-        document.getElementById("bgg-hover-weight").innerHTML=weight.toFixed(2);
-        // if(weight < 3) {
-        //     document.getElementById("bgg-hover-weight").style.color = "#5bda98";
-        // } else if(weight < 4) {
-        //     document.getElementById("bgg-hover-weight").style.color = "#ff6b26";
-        // } else {
-        //     document.getElementById("bgg-hover-weight").style.color = "#df4751";
-        // }
-    }
-
-    async function formatDesigners(names, ids, url) {
-        if(names.length == 0) {
-            document.getElementById("bgg-hover-designer-plural").style.display = "none";
-            document.getElementById("bgg-hover-designer-1").innerHTML="None";
-            document.getElementById("bgg-hover-designer-1").href=url + "/credits";
-            document.getElementById("bgg-hover-designer-comma").style.display="none";
-            document.getElementById("bgg-hover-designer-2").style.display="none";
-            document.getElementById("bgg-hover-designer-more").style.display="none";
-        } else if(names.length == 1) {
-            document.getElementById("bgg-hover-designer-plural").style.display = "none";
-            document.getElementById("bgg-hover-designer-1").innerHTML=names[0];
-            document.getElementById("bgg-hover-designer-1").href="https://boardgamegeek.com/boardgamedesigner/" + ids[0];
-            document.getElementById("bgg-hover-designer-comma").style.display="none";
-            document.getElementById("bgg-hover-designer-2").style.display="none";
-            document.getElementById("bgg-hover-designer-more").style.display="none";
-        } else if(names.length == 2) {
-            document.getElementById("bgg-hover-designer-plural").style.display = "inline";
-            document.getElementById("bgg-hover-designer-1").innerHTML=names[0];
-            document.getElementById("bgg-hover-designer-1").href="https://boardgamegeek.com/boardgamedesigner/" + ids[0];
-            document.getElementById("bgg-hover-designer-comma").style.display="inline";
-            document.getElementById("bgg-hover-designer-2").innerHTML=names[1];
-            document.getElementById("bgg-hover-designer-2").href="https://boardgamegeek.com/boardgamedesigner/" + ids[1];
-            document.getElementById("bgg-hover-designer-2").style.display="inline";
-            document.getElementById("bgg-hover-designer-more").style.display="none";
-        } else {
-            document.getElementById("bgg-hover-designer-plural").style.display = "inline";
-            document.getElementById("bgg-hover-designer-1").innerHTML=names[0];
-            document.getElementById("bgg-hover-designer-1").href="https://boardgamegeek.com/boardgamedesigner/" + ids[0];
-            document.getElementById("bgg-hover-designer-comma").style.display="none";
-            document.getElementById("bgg-hover-designer-2").style.display="none";
-            document.getElementById("bgg-hover-designer-more").innerHTML=" + " + (names.length - 1) + " more";
-            document.getElementById("bgg-hover-designer-more").href=url + "/credits";
-            document.getElementById("bgg-hover-designer-more").style.display="inline";
-        }
-    }
-
-    async function formatArtists(names, ids, url) {
-        if(names.length == 0) {
-            document.getElementById("bgg-hover-artist-plural").style.display = "none";
-            document.getElementById("bgg-hover-artist-1").innerHTML="None";
-            document.getElementById("bgg-hover-artist-1").href=url + "/credits";
-            document.getElementById("bgg-hover-artist-comma").style.display="none";
-            document.getElementById("bgg-hover-artist-2").style.display="none";
-            document.getElementById("bgg-hover-artist-more").style.display="none";
-        } else if(names.length == 1) {
-            document.getElementById("bgg-hover-artist-plural").style.display = "none";
-            document.getElementById("bgg-hover-artist-1").innerHTML=names[0];
-            document.getElementById("bgg-hover-artist-1").href="https://boardgamegeek.com/boardgameartist/" + ids[0];
-            document.getElementById("bgg-hover-artist-comma").style.display="none";
-            document.getElementById("bgg-hover-artist-2").style.display="none";
-            document.getElementById("bgg-hover-artist-more").style.display="none";
-        } else if(names.length == 2) {
-            document.getElementById("bgg-hover-artist-plural").style.display = "inline";
-            document.getElementById("bgg-hover-artist-1").innerHTML=names[0];
-            document.getElementById("bgg-hover-artist-1").href="https://boardgamegeek.com/boardgameartist/" + ids[0];
-            document.getElementById("bgg-hover-artist-comma").style.display="inline";
-            document.getElementById("bgg-hover-artist-2").innerHTML=names[1];
-            document.getElementById("bgg-hover-artist-2").href="https://boardgamegeek.com/boardgameartist/" + ids[1];
-            document.getElementById("bgg-hover-artist-2").style.display="inline";
-            document.getElementById("bgg-hover-artist-more").style.display="none";
-        } else {
-            document.getElementById("bgg-hover-artist-plural").style.display = "inline";
-            document.getElementById("bgg-hover-artist-1").innerHTML=names[0];
-            document.getElementById("bgg-hover-artist-1").href="https://boardgamegeek.com/boardgameartist/" + ids[0];
-            document.getElementById("bgg-hover-artist-comma").style.display="none";
-            document.getElementById("bgg-hover-artist-2").style.display="none";
-            document.getElementById("bgg-hover-artist-more").innerHTML=" + " + (names.length - 1) + " more";
-            document.getElementById("bgg-hover-artist-more").href=url + "/credits";
-            document.getElementById("bgg-hover-artist-more").style.display="inline";
-        }
-    }
-
-    async function formatPlayerCount(min, max) {
-        var out = "";
-        if(min == max) {
-            if(min == 1) {
-                out = "1 player";
-            } else {
-                out = min + " players";
-            }
-        }  else {
-            out = min+"-"+max;
-        }
-        document.getElementById("bgg-float-extension-numplayers").innerHTML="# Players: " + out;
-    }
-
-    async function formatTime(min, max) {
-        var out = "";
-        if(min == max) {
-            out = min + " Min";
-        }  else {
-            out = min + "–" + max + " Min";
-        }
-        document.getElementById("bgg-float-extension-time").innerHTML=out;
-    }
+    document.getElementById("bgg-float-extension-time").innerHTML=out;
+}
     
 }
