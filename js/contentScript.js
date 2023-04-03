@@ -26,10 +26,12 @@ $(document).ready(function(){
 
 // For when the mouse enters an <a.bggHoverLink> element
 function onEnter(e) {
+    // console.log(e);
+
     if(e.ctrlKey && document.querySelector('.bggHoverWindow').style.display == "inline") {
         return;
     }
-    target = e.target;
+    target = e;
     queryUrl = matchUrl(e.target.href);
     if(queryUrl) { //if it is a boardgame link
         e.target.addEventListener("mouseleave", onLeave);
@@ -41,6 +43,7 @@ function onEnter(e) {
 
 // For when the mouse leaves an <a.bggHoverLink> element
 function onLeave(e) {
+    console
     hovering = false;
     if(e.ctrlKey) {
         return;
@@ -48,7 +51,7 @@ function onLeave(e) {
     
     document.querySelector('.bggHoverWindow').style.display = 'none';
     
-    target.removeEventListener("mouseleave", onLeave);
+    target.target.removeEventListener("mouseleave", onLeave);
     document.removeEventListener("mousemove", onMove);
 }
 
@@ -57,7 +60,9 @@ function onMove(e) {
     if(e.ctrlKey) {
         return;
     }
-    if(e.target != target) {
+    if(!overElementOrChildren(target.target, e.target)) {// e.target != target.target && e.target != target.relatedTarget
+        // console.log("Leaving");
+        // console.log(e);
         onLeave(target);
     }
     document.querySelector('.bggHoverWindow').style.left = e.pageX + 'px';
@@ -70,6 +75,21 @@ function onMove(e) {
     if(e.clientY + $('.bggHoverWindow').height() + hoverWindowMargin > $(window).height()) {
         document.querySelector('.bggHoverWindow').style.top = ((e.pageY - e.clientY) + $(window).height() - $('.bggHoverWindow').height() - hoverWindowMargin*2) + 'px';
     }
+}
+
+// Check if the mouse is still over the original target (or one of that target's children)
+// Return true if the mouse is still over the original target or one of its children
+function overElementOrChildren(originalTarget, currentTarget) {
+    if(originalTarget == currentTarget) {
+        return true;
+    }
+    var children = originalTarget.children;
+    for (var i = 0; i < children.length; i++) {
+        if(overElementOrChildren(children[i], currentTarget)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // For adding listeners to <a> boardgamegeek.com links
