@@ -137,7 +137,7 @@ div#bgg-float-rating-title-div {
     padding: .4em;
 }
 
-.title {
+.bgg-hover-title {
     text-decoration: underline;
     font-weight: bold;
     display: inline-block;
