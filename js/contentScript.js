@@ -168,6 +168,7 @@ async function insertToFloatWindow(queryUrl, originalUrl) {
             formatRating(rating, originalUrl);
             formatWeight(weight);
             document.getElementById("bgg-hover-year").innerHTML="(" + year + ")";
+            document.getElementById("bgg-float-extension-thumb-link").href = originalUrl + "/images";
             if(hovering) {
                 document.querySelector('.bggHoverWindow').style.display = 'inline';
             }
