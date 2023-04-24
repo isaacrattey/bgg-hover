@@ -2,7 +2,7 @@
 
 Extension for saving time navigating BGG
 
-[https://chrome.google.com/webstore/detail/bgg-hover/npikjghibeikchpjjommcpahcocolfmc](Download here)
+[Download here](https://chrome.google.com/webstore/detail/bgg-hover/npikjghibeikchpjjommcpahcocolfmc)
 
 ## To Do
 - Add an allowlist for websites
