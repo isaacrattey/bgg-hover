@@ -26,7 +26,6 @@ $(document).ready(function(){
 
 // For when the mouse enters an <a.bggHoverLink> element
 function onEnter(e) {
-    // console.log(e);
 
     if(e.ctrlKey && document.querySelector('.bggHoverWindow').style.display == "inline") {
         return;
@@ -61,8 +60,6 @@ function onMove(e) {
         return;
     }
     if(!overElementOrChildren(target.target, e.target)) {// e.target != target.target && e.target != target.relatedTarget
-        // console.log("Leaving");
-        // console.log(e);
         onLeave(target);
     }
     document.querySelector('.bggHoverWindow').style.left = e.pageX + 'px';
@@ -96,7 +93,6 @@ function overElementOrChildren(originalTarget, currentTarget) {
 function addToLinks() {
     var a_list = document.querySelectorAll('a[href*="boardgame"]:not(.bggHoverLink)'); // returns NodeList
     var a_array = [...a_list]; // converts NodeList to Array
-    // console.log("Adding to: " + a_array.length + " links");
     a_array.forEach(a => {
 
         a.addEventListener("mouseenter", onEnter);
@@ -113,10 +109,8 @@ function validateLoad() {
     var a_list = document.querySelectorAll('a[href*="boardgame"]:not(.bggHoverLink)'); // returns NodeList
     var a_array = [...a_list]; // converts NodeList to Array
     if(a_array.length == 0) {
-        // console.log("Validated successfully: " + a_array.length + " links left");
         setTimeout(validateLoad, 5000);
     } else {
-        // console.log("Validated unsuccessfully: " + a_array.length + " links left");
         addToLinks();
     }
 }
@@ -208,13 +202,6 @@ async function formatTitle(title) {
 // Commented out portion is for updating the color of the weight text(but it didn't look great)
 async function formatWeight(weight) {
     document.getElementById("bgg-hover-weight").innerHTML=weight.toFixed(2);
-    // if(weight < 3) {
-    //     document.getElementById("bgg-hover-weight").style.color = "#5bda98";
-    // } else if(weight < 4) {
-    //     document.getElementById("bgg-hover-weight").style.color = "#ff6b26";
-    // } else {
-    //     document.getElementById("bgg-hover-weight").style.color = "#df4751";
-    // }
 }
 
 // Format designer names and add hyperlinks

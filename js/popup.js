@@ -24,11 +24,3 @@ async function getCurrentUrl() {
     let [tab] = await chrome.tabs.query(queryOptions);
     return tab.url;
 }
-
-// chrome.storage.local.set({ key: value }).then(() => {
-//     console.log("Value is set to " + value);
-// });
-
-// chrome.storage.local.get(["key"]).then((result) => {
-//     console.log("Value currently is " + result.key);
-// });
