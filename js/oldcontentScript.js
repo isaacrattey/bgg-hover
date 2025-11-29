@@ -26,7 +26,6 @@ $(document).ready(function(){
 
 // For when the mouse enters an <a.bggHoverLink> element
 function onEnter(e) {
-    
     if(e.ctrlKey && document.querySelector('.bggHoverWindow').style.display == "inline") {
         return;
     }
