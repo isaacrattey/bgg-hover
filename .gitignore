@@ -2,3 +2,4 @@
 removed_from_manifest
 *.zip
 .env
+oldcontentScript.js

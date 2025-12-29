@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BGG Token</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+    <body>
+    <div class="container">
+        <h1>BGG API Authorization Token</h1>
+
+
+        <label for="token">Bearer Token</label>
+        <textarea id="token" placeholder="Paste your bearer token here" rows="3"></textarea>
+
+
+        <div class="row">
+            <button id="save">Save</button>
+            <button id="clear" class="danger">Clear</button>
+        </div>
+
+
+        <p id="status" class="status"></p>
+
+        <p id="how-to" class="how-to">Go <a target="_blank" href="https://boardgamegeek.com/using_the_xml_api">here</a> for instructions for how to get your Authorization Token.</p>
+
+
+        <p class="hint">Token is stored in <code>chrome.storage.local</code> and used only by the extension's background service worker for API calls.</p>
+    </div>
+    <script src="popup.js"></script>
+    </body>
+</html>
